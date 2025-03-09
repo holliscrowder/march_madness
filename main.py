@@ -3,7 +3,6 @@ import random
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
-import requests
 
 load_dotenv(".env")
 PPLX_KEY = os.environ.get("PPLX_KEY")
@@ -21,7 +20,6 @@ def determineWinner(team1, team2):
     return winner
 
 #test perplexity
-
 messages = [
     {
         "role": "system",
@@ -41,16 +39,5 @@ response = client.chat.completions.create(
     messages=messages,
 )
 
-# payload = {
-#     "model": "sonar",
-#     "messages": messages,
-# }
-
-# headers = {
-#     "Authorization": f'Bearer {PPLX_KEY}',
-#     "Content-Type": "application/json"
-# }
-
-# response = requests.post(url="https://api.perplexity.ai/chat/completions", json=payload, headers=headers)
 print(response.content)
 
