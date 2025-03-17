@@ -9,9 +9,6 @@ import json
 load_dotenv(".env")
 PPLX_KEY = os.environ.get("PPLX_KEY")
 
-team1 = "Golden State Warriors"
-team2 = "Denver Nuggets"
-
 # load teams
 with open("first_four.json", "r") as f:
     matchups = json.load(f)
@@ -26,7 +23,7 @@ def determineWinner(team1: str, team2: str):
         {
             "role": "system",
             "content": """ 
-                You are an expert in basketball and statistics.
+                You are an expert in college basketball and statistics.
                 You are tasked with researching two teams and determining the most likely winner in a matchup.
                 Please return your response in JSON format, with the following fields:
                 ```
@@ -63,7 +60,15 @@ def determineWinner(team1: str, team2: str):
     return [winner, reasoning]
 
 # test llm winner function
-# [winner, reasoning] = determineWinner("Denver Nuggets", "Golden State Warriors")
+winners = {}
+for match in matchups:
+    team1 = match[0]
+    team2 = match[1]
+    [winner, reasoning] = determineWinner(team1, team2)
+    winners[winner] = reasoning
 
-# print(winner)
-# print(reasoning)
+print(winners)
+
+# write to output json
+with open ("first_four_output.json", "w") as f:
+    json.dump(winners, f)
