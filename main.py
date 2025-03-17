@@ -4,16 +4,13 @@ from dotenv import load_dotenv
 import os
 import json
 
-
 # load env variables
 load_dotenv(".env")
 PPLX_KEY = os.environ.get("PPLX_KEY")
 
 # load teams
-with open("first_four.json", "r") as f:
+with open("pplx_round_64.json", "r") as f:
     matchups = json.load(f)
-
-print(matchups)
 
 # determine winner given matchup
 def determineWinner(team1: str, team2: str):
@@ -51,11 +48,16 @@ def determineWinner(team1: str, team2: str):
 
     # grab content string
     content = response.choices[0].message.content
+    content = content.strip()
 
     # convert to JSON
-    content_json = json.loads(content, strict=False)
-    winner = content_json["winner"]
-    reasoning = content_json["reasoning"]
+    try:
+        content_json = json.loads(content, strict=False)
+        winner = content_json["winner"]
+        reasoning = content_json["reasoning"]
+    except json.JSONDecodeError as e:
+        print("JSON decode error:", e)
+        return ["ERROR", "Invalid JSON response"]
 
     return [winner, reasoning]
 
@@ -70,5 +72,5 @@ for match in matchups:
 print(winners)
 
 # write to output json
-with open ("first_four_output.json", "w") as f:
+with open ("round_64_output.json", "w") as f:
     json.dump(winners, f)
