@@ -13,54 +13,51 @@ team1 = "Golden State Warriors"
 team2 = "Denver Nuggets"
 
 # test random winner
-def determineWinner(team1, team2):
-    odds = random.randint(0,1)
-    if odds > 0.5:
-        winner = team2
-    else:
-        winner = team1
+def determineWinner(team1: str, team2: str):
 
-    return winner
+    # test perplexity
+    messages = [
+        {
+            "role": "system",
+            "content": """ 
+                You are an expert in basketball and statistics.
+                You are tasked with researching two teams and determining the most likely winner in a matchup.
+                Please return your response in JSON format, with the following fields:
+                ```
+                {
+                    "reasoning": ,
+                    "winner": ,
+                }
+                ```
+                Return ONLY THE JSON AND NOTHING ELSE.
+                """,
 
-# test perplexity
-messages = [
-    {
-        "role": "system",
-        "content": """ 
-            You are an expert in basketball and statistics.
-            You are tasked with researching two teams and determining the most likely winner in a matchup.
-            Please return your response in JSON format, with the following fields:
-            ```
-            {
-                "reasoning": ,
-                "winner": ,
-            }
-            ```
-            Return ONLY THE JSON AND NOTHING ELSE.
-            """,
+        },
+        {
+            "role": "user",
+            "content": f"{team1} vs. {team2}",
+        }
+    ]
 
-    },
-    {
-        "role": "user",
-        "content": "Denver Nuggets vs. Golden State Warriors",
-    }
-]
+    client = OpenAI(api_key=PPLX_KEY, base_url="https://api.perplexity.ai")
 
-client = OpenAI(api_key=PPLX_KEY, base_url="https://api.perplexity.ai")
+    response = client.chat.completions.create(
+        model="sonar-pro",
+        messages=messages,
+    )
 
-response = client.chat.completions.create(
-    model="sonar-pro",
-    messages=messages,
-)
+    # grab content string
+    content = response.choices[0].message.content
 
-# grab content string
-content = response.choices[0].message.content
+    # convert to JSON
+    content_json = json.loads(content, strict=False)
+    winner = content_json["winner"]
+    reasoning = content_json["reasoning"]
 
-# convert to JSON
-content_json = json.loads(content, strict=False)
-winner = content_json["winner"]
-reasoning = content_json["reasoning"]
+    return [winner, reasoning]
+
+# test llm winner function
+[winner, reasoning] = determineWinner("Denver Nuggets", "Golden State Warriors")
 
 print(winner)
 print(reasoning)
-
