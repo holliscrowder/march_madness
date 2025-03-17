@@ -1,9 +1,9 @@
 # imports
-import random
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
 import json
+
 
 # load env variables
 load_dotenv(".env")
@@ -12,7 +12,13 @@ PPLX_KEY = os.environ.get("PPLX_KEY")
 team1 = "Golden State Warriors"
 team2 = "Denver Nuggets"
 
-# test random winner
+# load teams
+with open("first_four.json", "r") as f:
+    matchups = json.load(f)
+
+print(matchups)
+
+# determine winner given matchup
 def determineWinner(team1: str, team2: str):
 
     # test perplexity
@@ -57,7 +63,7 @@ def determineWinner(team1: str, team2: str):
     return [winner, reasoning]
 
 # test llm winner function
-[winner, reasoning] = determineWinner("Denver Nuggets", "Golden State Warriors")
+# [winner, reasoning] = determineWinner("Denver Nuggets", "Golden State Warriors")
 
-print(winner)
-print(reasoning)
+# print(winner)
+# print(reasoning)
